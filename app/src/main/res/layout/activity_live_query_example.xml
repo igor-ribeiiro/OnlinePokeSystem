@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
-        android:text="You have not been poked yet."
+        android:text="No pokes yet."
         android:ems="10"
         android:id="@+id/pokeText"
         android:singleLine="false"

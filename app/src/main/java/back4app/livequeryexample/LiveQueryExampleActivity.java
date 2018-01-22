@@ -62,7 +62,12 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
                     public void run() {
                         EditText pokeText = (EditText) findViewById(R.id.pokeText);
                         numPokes++;
-                        pokeText.setText("Poked " + numPokes + " times.");
+                        if(numPokes == 1) {
+                            pokeText.setText("Poked " + numPokes + " time.");
+                        }
+                        else {
+                            pokeText.setText("Poked " + numPokes + " times.");
+                        }
                     }
                 });
             }
