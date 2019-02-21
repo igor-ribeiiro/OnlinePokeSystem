@@ -6,13 +6,10 @@ import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.parse.Parse;
 
@@ -22,9 +19,6 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 import com.parse.livequery.ParseLiveQueryClient;
 import com.parse.livequery.SubscriptionHandling;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,6 +30,8 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_live_query_example);
+
         // Back4App's Parse setup
         Parse.initialize(new Parse.Configuration.Builder(this)
                 .applicationId("APPLICATION_ID")
@@ -43,9 +39,9 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
                 .server("wss://<your_subdomain>.back4app.io/").build()
         );
 
-        setContentView(R.layout.activity_live_query_example);
+        // Init Live Query Client
         ParseLiveQueryClient parseLiveQueryClient = null;
-        
+
         try {
             parseLiveQueryClient = ParseLiveQueryClient.Factory.getClient(new URI("wss://<your_subdomain>.back4app.io/"));
         } catch (URISyntaxException e) {
@@ -55,7 +51,6 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
         if (parseLiveQueryClient != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery("Message");
             parseQuery.whereEqualTo("destination", "pokelist");
-
             SubscriptionHandling<ParseObject> subscriptionHandling = parseLiveQueryClient.subscribe(parseQuery);
 
             subscriptionHandling.handleEvent(SubscriptionHandling.Event.CREATE, new SubscriptionHandling.HandleEventCallback<ParseObject>() {
@@ -68,17 +63,14 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
                             numPokes++;
                             if(numPokes == 1) {
                                 pokeText.setText("Poked " + numPokes + " time.");
-
                             }
                             else {
                                 pokeText.setText("Poked " + numPokes + " times.");
                             }
                         }
-
                     });
                 }
             });
-
         }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -97,27 +89,6 @@ public class LiveQueryExampleActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_live_query_example, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     int numPokes = 0;

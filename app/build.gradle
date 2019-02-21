@@ -36,5 +36,4 @@ dependencies {
     // Don't forget to change the line below with the latest version of Parse SDK for Android
     implementation "com.github.parse-community.Parse-SDK-Android:parse:1.18.5"
     implementation 'com.github.parse-community:ParseLiveQuery-Android:1.1.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
 }
