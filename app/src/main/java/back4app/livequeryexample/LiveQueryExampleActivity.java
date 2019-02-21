@@ -1,6 +1,8 @@
 package back4app.livequeryexample;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,68 +12,74 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.parse.Parse;
+
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
-import com.parse.ParseACL;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
+import com.parse.livequery.ParseLiveQueryClient;
+import com.parse.livequery.SubscriptionHandling;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import tgio.parselivequery.BaseQuery;
-import tgio.parselivequery.LiveQueryClient;
-import tgio.parselivequery.LiveQueryEvent;
-import tgio.parselivequery.Subscription;
-import tgio.parselivequery.interfaces.OnListener;
+import java.net.URI;
+import java.net.URISyntaxException;
+
 
 public class LiveQueryExampleActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_live_query_example);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        EditText pokeText = (EditText) findViewById(R.id.pokeText);
-        setSupportActionBar(toolbar);
 
         // Back4App's Parse setup
         Parse.initialize(new Parse.Configuration.Builder(this)
-                .applicationId("cfEqijsSr9AS03FR76DJYM374KHH5GddQSQvIU7H")
-                .clientKey("F9dLUvMhb8D7aMCAukUDMFae630qhhlYTki6dGxP")
-                .server("https://parseapi.back4app.com/").build()
+                .applicationId("APPLICATION_ID")
+                .clientKey("CLIENT_KEY")
+                .server("wss://<your_subdomain>.back4app.io/").build()
         );
 
-        LiveQueryClient.init("wss://livequeryexample.back4app.io", "cfEqijsSr9AS03FR76DJYM374KHH5GddQSQvIU7H", true);
-        LiveQueryClient.connect();
+        setContentView(R.layout.activity_live_query_example);
+        ParseLiveQueryClient parseLiveQueryClient = null;
+        
+        try {
+            parseLiveQueryClient = ParseLiveQueryClient.Factory.getClient(new URI("wss://<your_subdomain>.back4app.io/"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
-        // Subscription
-        final Subscription sub = new BaseQuery.Builder("Message")
-                .where("destination", "pokelist")
-                .addField("content")
-                .build()
-                .subscribe();
+        if (parseLiveQueryClient != null) {
+            ParseQuery<ParseObject> parseQuery = new ParseQuery("Message");
+            parseQuery.whereEqualTo("destination", "pokelist");
 
-        sub.on(LiveQueryEvent.CREATE, new OnListener() {
-            @Override
-            public void on(JSONObject object) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        EditText pokeText = (EditText) findViewById(R.id.pokeText);
-                        numPokes++;
-                        if(numPokes == 1) {
-                            pokeText.setText("Poked " + numPokes + " time.");
+            SubscriptionHandling<ParseObject> subscriptionHandling = parseLiveQueryClient.subscribe(parseQuery);
+
+            subscriptionHandling.handleEvent(SubscriptionHandling.Event.CREATE, new SubscriptionHandling.HandleEventCallback<ParseObject>() {
+                @Override
+                public void onEvent(ParseQuery<ParseObject> query, final ParseObject object) {
+                    Handler handler = new Handler(Looper.getMainLooper());
+                    handler.post(new Runnable() {
+                        public void run() {
+                            EditText pokeText = findViewById(R.id.pokeText);
+                            numPokes++;
+                            if(numPokes == 1) {
+                                pokeText.setText("Poked " + numPokes + " time.");
+
+                            }
+                            else {
+                                pokeText.setText("Poked " + numPokes + " times.");
+                            }
                         }
-                        else {
-                            pokeText.setText("Poked " + numPokes + " times.");
-                        }
-                    }
-                });
-            }
-        });
+
+                    });
+                }
+            });
+
+        }
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
