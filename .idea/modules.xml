@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LiveQueryExample.iml" filepath="$PROJECT_DIR$/LiveQueryExample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/OnlinePokeSystem.iml" filepath="$PROJECT_DIR$/OnlinePokeSystem.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/back4app-live-query.iml" filepath="$PROJECT_DIR$/back4app-live-query.iml" />
     </modules>
   </component>
 </project>
